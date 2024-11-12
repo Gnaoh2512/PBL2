@@ -28,6 +28,7 @@ public:
     void freeze() { isFrozen = true; }
     void unFreeze() { isFrozen = false; }
     void setAccountId(int Id) { accountId = Id; }
+    void setUsername(string username) { BankAccount::username = username; }
     void deposit(double amount) {
         BankAccount::balance += amount;
         std::cout << "Deposit succeeded. Current balance: $" << balance << std::endl;

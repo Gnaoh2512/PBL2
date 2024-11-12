@@ -25,5 +25,5 @@ int BankAccount::generateAccountId(SortedLinkedList<int>& usedAccountIds) {
 
 string BankAccount::getCurrentDate() {
     TimeUtils timeUtils;
-    return timeUtils.getCurrentDate(true);
+    return timeUtils.getCurrentDate(false);
 }

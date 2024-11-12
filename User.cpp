@@ -266,6 +266,7 @@ void User::createBankAccount(SortedLinkedList<int>& usedAccountIds, BankAccNode*
     }
 
     newAccount->setAccountId(accountId);
+    newAccount->setUsername(User::username);
     usedAccountIds.add(accountId);
 
     BankAccNode* newBankAccountNode = new BankAccNode(newAccount, nullptr);

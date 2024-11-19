@@ -12,6 +12,8 @@ public:
     Admin(const string& name, const string& user, const string& pass)
     : Account(name, user, pass) {}
 
+    ~Admin() {};
+
     void displayInfo() override {
         cout << "Admin Account: " << name << endl;
     };

@@ -127,6 +127,11 @@ void User::changePassword() {
             continue;
         }
 
+        if (newPassword == password) {
+            cout << "Password cannot be the same as the old one.\n";
+            continue;
+        }
+
         if (newPassword.length() < 6) {
             cout << "Password must be at least 6 characters long.\n";
             continue;
@@ -178,6 +183,8 @@ void User::saveTransactionHistory() {
 }
 
 void User::loadTransactionHistory() {
+    if (transactionHistoryHead != nullptr) return;
+
     ifstream inFile("transaction.txt");
 
     if (inFile.is_open()) {
@@ -287,6 +294,8 @@ void User::createBankAccount(SortedLinkedList<int>& usedAccountIds, BankAccNode*
 }
 
 void User::loadBankAccount(BankAccNode* bankAccHead) {
+    if (bankAccountHead != nullptr) return;
+
     BankAccNode* temp = bankAccHead;
 
     while (temp) {

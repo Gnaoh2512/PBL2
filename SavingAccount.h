@@ -18,6 +18,7 @@ public:
     std::string getData() override;
     std::string getAccountType() override;
     bool withdraw(double amount) override;
+    bool transfer(double amount, BankAccount& bankAcc) override;
     void monthlyUpdate() override;
 };
 

@@ -8,7 +8,7 @@
 
 class RegularAccount : public BankAccount {
 private:
-    double monthlyFee = 5;  // Monthly fee set to 5
+    double monthlyFee = 5;
     double transactionFee = 1;
 
 public:
@@ -18,6 +18,7 @@ public:
     std::string getData() override;
     std::string getAccountType() override;
     bool withdraw(double amount) override;
+    bool transfer(double amount, BankAccount& bankAcc) override;
     void monthlyUpdate() override;
 };
 

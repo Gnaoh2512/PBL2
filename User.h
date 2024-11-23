@@ -14,9 +14,6 @@
 
 using namespace std;
 
-class BankAccount;
-#include "BankAccount.h"
-
 struct TransactionNode {
     Transaction* transaction;
     TransactionNode* next;
@@ -66,6 +63,7 @@ public:
 
     void deposit();
     void withdraw();
+    void transfer(BankAccNode* bankAccHead);
     void changePassword();
     void showTransactionHistory();
     void saveTransactionHistory();

@@ -8,17 +8,14 @@ using namespace std;
 
 class Transaction {
 protected:
-    int transactionId;
-    string transactionDate;
-    string transactionType;
-    string username;
-    int fromAccountId;
-    int toAccountId;
+    uint64_t transactionId;
+    string transactionDate, transactionType, username;
+    int fromAccountId, toAccountId;
     double amount;
 
 public:
     
-    Transaction(int transId, const string &type,  const string &username, int fromAcc, int toAcc, double amt, const string &date);
+    Transaction(uint64_t transId, const string &type,  const string &username, int fromAcc, int toAcc, double amt, const string &date);
 
     int getTransactionId() const { return transactionId; };
     string getTransactionDate() const { return transactionDate; };

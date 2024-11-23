@@ -41,6 +41,18 @@ bool LoanAccount::withdraw(double amount) {
     }
 }
 
+bool LoanAccount::transfer(double amount, BankAccount& bankAcc) {
+    if (loanLimit - amount - currentLoan < 0) {
+        std::cout << "Exceeded loan limit." << std::endl;
+        return false;
+    } else {
+        bankAcc.getTransfered(amount);
+        currentLoan += amount;
+        std::cout << "Transfer succeeded. Current loan: $" << currentLoan << std::endl;
+        return true;
+    }
+}
+
 void LoanAccount::monthlyUpdate() {
     if (balance >= currentLoan) {
         cout << balance << " " << currentLoan;

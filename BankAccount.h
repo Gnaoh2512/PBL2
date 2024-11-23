@@ -30,8 +30,11 @@ public:
     void setAccountId(int Id) { accountId = Id; }
     void setUsername(string username) { BankAccount::username = username; }
     void deposit(double amount) {
-        BankAccount::balance += amount;
-        std::cout << "Deposit succeeded. Current balance: $" << balance << std::endl;
+        balance += amount;
+        cout << "Deposit succeeded. Current balance: $" << balance << endl;
+    }
+    void getTransfered(double amount) {
+        balance += amount;
     }
 
     static int generateAccountId(SortedLinkedList<int>& usedAccountIds);
@@ -41,6 +44,7 @@ public:
     virtual string getData() = 0;
     virtual string getAccountType() = 0;
     virtual bool withdraw(double amount) = 0;
+    virtual bool transfer(double amount, BankAccount& bankAcc) = 0;
     virtual void monthlyUpdate() = 0;
 };
 

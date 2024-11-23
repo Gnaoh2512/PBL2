@@ -7,9 +7,7 @@ using namespace std;
 
 class Account {
 protected:
-    string name;
-    string username;
-    string password;
+    string name, username, password;
 
 public:
     Account(string name, string user, string pass) : name(name), username(user), password(pass) {}

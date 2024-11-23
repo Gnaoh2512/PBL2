@@ -115,6 +115,85 @@ void User::withdraw() {
     }
 }
 
+void User::transfer(BankAccNode* bankAccHead) {
+    displayBankAccountsInfo();
+
+    char choice = 'y';
+    int choice2 = 1;
+
+    while (choice != 'n') {
+        BankAccNode* temp = bankAccountHead;
+        int index = 1;
+        
+        while (temp) {
+            cout << index << ". " << temp->account->getAccountId() << "    " << temp->account->getAccountType() << endl;
+            temp = temp->next;
+            index++;
+        }
+        
+        cout << "Choose bank account to be begin transfer:\n";
+        cin >> choice2;
+
+        if (choice2 < 1 || choice2 >= index) {
+            cout << "Invalid choice. Please select a valid account.\n";
+            continue;
+        }
+
+        temp = bankAccountHead;
+        for (int i = 1; i < choice2; i++) {
+            temp = temp->next;
+        }
+
+        if (temp->account->getIsFrozen()) {
+            cout << "Bank account is frozen and cannot be accessed to transfer.\n";
+            continue;
+        }
+
+        temp->account->displayInfo();
+        
+        int toAccountId;
+        double amount;
+        BankAccNode* temp2 = bankAccHead;
+
+        cout << "Enter account id to transfer: ";
+        cin >> toAccountId;
+
+        while (temp2) {
+            if (temp2->account->getAccountId() == toAccountId) {
+                break;
+            }
+            temp2 = temp2->next;
+        }
+
+        if (!temp2) {
+            cout << "Account not found.\n";
+            continue;
+        }
+
+        if (amount <= 0) {
+            cout << "Transfer amount must be greater than zero.\n";
+            continue;
+        }
+
+        cout << "Enter amount to transfer: ";
+        cin >> amount;
+
+        if (amount <= 0) {
+            cout << "Transfer amount must be greater than zero.\n";
+            continue;
+        }
+
+        if (temp->account->transfer(amount, *temp2->account)) {
+            recordTransaction("transfer", amount, temp2->account->getAccountId(), *temp->account);
+        } else {
+            cout << "Insufficient balance or invalid amount.\n";
+        }
+
+        cout << "Do you want to make another transfer? (y/n): ";
+        cin >> choice;
+    }
+}
+
 void User::changePassword() {
     string newPassword, confirmPassword;
 
@@ -342,11 +421,12 @@ void User::displayActions(SortedLinkedList<int>& usedAccountIds, BankAccNode* ba
         cout << "\nUser Menu:\n";
         cout << "1. Deposit\n";
         cout << "2. Withdraw\n";
-        cout << "3. View transaction history\n";
-        cout << "4. Change password\n";
-        cout << "5. Create bank account\n";
-        cout << "6. Show bank account\n";
-        cout << "7. Log out\n";
+        cout << "3. Transfer\n";
+        cout << "4. View transaction history\n";
+        cout << "5. Change password\n";
+        cout << "6. Create bank account\n";
+        cout << "7. Show bank account\n";
+        cout << "8. Log out\n";
         cout << "Enter your choice: ";
 
         cin >> userChoice;
@@ -358,35 +438,32 @@ void User::displayActions(SortedLinkedList<int>& usedAccountIds, BankAccNode* ba
         }
 
         switch (userChoice) {
-            case 1: {
+            case 1:
                 deposit();
                 break;
-            }
-            case 2: {
+            case 2:
                 withdraw();
                 break;
-            }
             case 3:
+                transfer(bankAccHead);
+                break;
+            case 4:
                 showTransactionHistory();
                 break;
-            case 4: {
-                
+            case 5:
                 changePassword();
                 break;
-            }
-            case 5: {
+            case 6:
                 createBankAccount(usedAccountIds, bankAccHead, bankAccTail);
                 break;
-            }
-            case 6: {
+            case 7:
                 showBankAccount();
                 break;
-            }
-            case 7:
+            case 8:
                 cout << "Logging out...\n";
                 break;
             default:
                 cout << "Invalid choice. Try again.\n";
         }
-    } while (userChoice != 7);
+    } while (userChoice != 8);
 }

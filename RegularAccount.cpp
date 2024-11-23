@@ -40,6 +40,18 @@ bool RegularAccount::withdraw(double amount) {
     }
 }
 
+bool RegularAccount::transfer(double amount, BankAccount& bankAcc) {
+    if (balance - amount - transactionFee < 0) {
+        std::cout << "Insufficient balance to transfer, considering transaction fee." << std::endl;
+        return false;
+    } else {
+        bankAcc.getTransfered(amount);
+        balance -= (amount + transactionFee);
+        std::cout << "Transfer succeeded. Current balance: $" << balance << std::endl;
+        return true;
+    }
+}
+
 void RegularAccount::monthlyUpdate() {
     if (balance >= monthlyFee) {
         balance -= monthlyFee;

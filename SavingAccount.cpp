@@ -51,3 +51,19 @@ bool SavingAccount::withdraw(double amount) {
     	return true;
   	}
 }
+
+bool SavingAccount::transfer(double amount, BankAccount& bankAcc) {
+  	if (balance - amount < minimumBalance) {
+    	cout << "Insufficient balance to transfer, considering mininmum balance.\n";
+    	return false;
+  	} else {
+    	if (amount/balance > 0.8) {
+    	  	if (isFlagged) isFrozen = true;
+    	  	isFlagged = true;
+    	}
+        bankAcc.getTransfered(amount);
+    	balance -= amount;
+    	std::cout << "Transfer succeeded. Current balance: $" << balance << std::endl;
+    	return true;
+  	}
+}

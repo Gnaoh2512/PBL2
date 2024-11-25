@@ -6,6 +6,8 @@
 #include "LoanAccount.h"
 #include "RegularAccount.h"
 #include "SavingAccount.h"
+#include "LinkedList.h"
+#include "TimeUtils.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -14,40 +16,21 @@
 
 using namespace std;
 
-struct TransactionNode {
-    Transaction* transaction;
-    TransactionNode* next;
-    TransactionNode(Transaction* trans, TransactionNode* nxt = nullptr) : transaction(trans), next(nxt) {}
-};
-
 class User : public Account {
-    TransactionNode* transactionHistoryHead = nullptr;
-    BankAccNode* bankAccountHead = nullptr;
+    LinkedList<Transaction> transactionHistory;
+    LinkedList<BankAccount> userBankAccounts;
 
 public:
     User(const string& name, const string& user, const string& pass)
         : Account(name, user, pass) {}
 
-    ~User() {
-        TransactionNode* currentTransaction = transactionHistoryHead;
-        while (currentTransaction != nullptr) {
-            TransactionNode* temp = currentTransaction;
-            currentTransaction = currentTransaction->next;
-            delete temp->transaction;
-            delete temp;
-        }
-
-        BankAccNode* currentAccount = bankAccountHead;
-        while (currentAccount != nullptr) {
-            BankAccNode* temp = currentAccount;
-            currentAccount = currentAccount->next;
-            delete temp->account;
-            delete temp;
-        }
+    ~User() override {
+        userBankAccounts.clear();
+        transactionHistory.clear();
     }
 
     void displayInfo() override {
-        cout << "Name: " << name << endl;
+        cout << "Name: " << name << "| Username: " << username << "| Password: " << password << endl;
     }
 
     void displayBankAccountsInfo();
@@ -63,16 +46,16 @@ public:
 
     void deposit();
     void withdraw();
-    void transfer(BankAccNode* bankAccHead);
+    void transfer(LinkedList<BankAccount> &bankAccs);
     void changePassword();
     void showTransactionHistory();
     void saveTransactionHistory();
     void loadTransactionHistory();
     void recordTransaction(const string& transactionType, double amount, long toAccId, BankAccount& bankAccount);
-    void createBankAccount(SortedLinkedList<int>& usedAccountIds, BankAccNode* bankAccHead, BankAccNode* bankAccTail);
-    void loadBankAccount(BankAccNode* bankAccHead);
+    void createBankAccount(SortedLinkedList<int>& usedAccountIds, LinkedList<BankAccount> &bankAccs);
+    void loadBankAccount(LinkedList<BankAccount> &bankAccs);
     void showBankAccount();
-    void displayActions(SortedLinkedList<int>& usedAccountIds, BankAccNode* bankAccHead, BankAccNode* bankAccTail);
+    void displayActions(SortedLinkedList<int>& usedAccountIds, LinkedList<BankAccount> &bankAccs);
 };
 
 #endif // USER_H

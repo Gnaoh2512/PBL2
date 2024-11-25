@@ -9,48 +9,23 @@
 #include "Admin.h"
 #include "Transaction.h"
 #include "SortedLinkedList.h"
+#include "LinkedList.h"
 #include "BankAccount.h"
 #include "TimeUtils.h"
 
 using namespace std;
 
-Node* accHead = nullptr;
-Node* accTail = nullptr;
-BankAccNode* bankAccHead = nullptr;
-BankAccNode* bankAccTail = nullptr;
+LinkedList<Account> accs;
+LinkedList<BankAccount> bankAccs;
 SortedLinkedList<int> usedAccountIds;
 SortedLinkedList<string> usedUsernames;
 Account* loggedInAccount = nullptr;
-
-void addAccountToList(Account* account) {
-    Node* newNode = new Node(account, nullptr);
-    
-    if (accHead == nullptr) {
-        accHead = newNode;
-        accTail = newNode;
-    } else {
-        accTail->next = newNode;
-        accTail = newNode;
-    }
-}
-
-void addBankAccountToList(BankAccount* bankAccount) {
-    BankAccNode* newNode = new BankAccNode(bankAccount, nullptr);
-
-    if (bankAccHead == nullptr) {
-        bankAccHead = newNode;
-        bankAccTail = newNode;
-    } else {
-        bankAccTail->next = newNode;
-        bankAccTail = newNode;
-    }
-};
 
 void readDataFromFile() {
     ifstream inFileAccounts("accounts.txt");
     TimeUtils timeUtils;
     bool isNewMonth = timeUtils.isNewMonth();
-    if (isNewMonth) cout << "A new month has passed. Updated bank accounts data.\n";
+    if (isNewMonth) cout << "A new month has passed. Updated bank accounts data->\n";
 
     if (inFileAccounts.is_open()) {
         string line;
@@ -66,13 +41,11 @@ void readDataFromFile() {
 
             if (accountType == "User") {
                 ss >> flagged;
-                usedUsernames.add(username);
-                User* newUser = new User(name, username, password);
-                addAccountToList(newUser);
+                accs.add(new User(name, username, password));
             } else if (accountType == "Admin") {
-                Admin* newAdmin = new Admin(name, username, password);
-                addAccountToList(newAdmin);
+                accs.add(new Admin(name, username, password));
             }
+            usedUsernames.add(username);
         }
         inFileAccounts.close();
     } else {
@@ -106,21 +79,15 @@ void readDataFromFile() {
             getline(ss, temp, '|');
             isFrozen = stoi(temp);
 
-            BankAccount* bankAccount = nullptr;
             if (accountType == "loan") {
                 double currentLoan;
                 getline(ss, temp, '|');
                 currentLoan = stod(temp);
-                bankAccount = new LoanAccount(accountId, username, createdDate, balance, isFlagged, isFrozen, currentLoan);
+                bankAccs.add(new LoanAccount(accountId, username, createdDate, balance, isFlagged, isFrozen, currentLoan));
             } else if (accountType == "saving") {
-                bankAccount = new SavingAccount(accountId, username, createdDate, balance, isFlagged, isFrozen);
+                bankAccs.add(new SavingAccount(accountId, username, createdDate, balance, isFlagged, isFrozen));
             } else if (accountType == "regular") {
-                bankAccount = new RegularAccount(accountId, username, createdDate, balance, isFlagged, isFrozen);
-            }
-
-            if (bankAccount) {
-                if (isNewMonth) bankAccount->monthlyUpdate();
-                addBankAccountToList(bankAccount);
+                bankAccs.add(new RegularAccount(accountId, username, createdDate, balance, isFlagged, isFrozen));
             }
         }
         inFileBankAccounts.close();
@@ -136,73 +103,82 @@ Account* login() {
     cout << "Enter password: ";
     cin >> password;
 
-    Node* temp = accHead;
-    while (temp) {
-        if (temp->account->getUsername() == username && temp->account->verifyPassword(password)) {
-            return temp->account;
-        }
-        temp = temp->next;
+    LinkedList<Account>::Node* current = accs.head;
+
+    while (current) {
+        if (current->data->getUsername() == username) break;
+        current = current->next;
     }
-    return nullptr;
+
+    if (!current) return nullptr;
+
+    Account* currentAccount = current->data;
+    if (currentAccount->verifyPassword(password)) {
+        return currentAccount;
+    } else return nullptr;
 }
 
 void signUp() {
     string name, username, password, confirmPassword;
 
-    cout << "Enter name: ";
-    cin.ignore();
-    getline(cin, name);
+    cout << "Enter Name: ";
+    cin >> name;
 
-    do {
-        cout << "Enter username: ";
+    while (true) {
+        cout << "Enter Username: ";
         cin >> username;
-        if (usedUsernames.search(username)) {
-            cout << "Username is already taken. Please choose a different one.\n";
+        if (username.empty()) {
+            cout << "Username cannot be empty.\n";
+            continue;
         }
-    } while (usedUsernames.search(username));
+        if (username.length() < 6) {
+            cout << "Username must be at least 6 characters long.\n";
+            continue;
+        }
+        if (usedUsernames.search(name)) {
+            cout << "Username is already taken. Please choose a different one.\n";
+            continue;
+        }
+        break;
+    }
 
     while (true) {
         cout << "Enter new password: ";
         cin >> password;
-
         if (password.empty()) {
             cout << "Password cannot be empty.\n";
             continue;
         }
-
         if (password.length() < 6) {
             cout << "Password must be at least 6 characters long.\n";
             continue;
         }
-
         break;
     }
 
     while (true) {
         cout << "Confirm new password: ";
         cin >> confirmPassword;
-
         if (password != confirmPassword) {
             cout << "Passwords do not match. Please try again.\n";
             continue;
         }
-
         break;
     }
-
-    User* newUser = new User(name, username, password);
-    addAccountToList(newUser);
+        
+    usedUsernames.add(name);
+    accs.add(new User(name, username, password));
     cout << "Password updated successfully.\n";
 }
 
 void saveDataToFile() {
     ofstream outFileAccounts("accounts.txt");
-    Node* temp = accHead;
 
+    LinkedList<Account>::Node* temp1 = accs.head;
     if (outFileAccounts.is_open()) {
-        while (temp) {
-            outFileAccounts << temp->account->getData();
-            temp = temp->next;
+        while (temp1) {
+            outFileAccounts << temp1->data->getData();
+            temp1 = temp1->next;
         }
         outFileAccounts.close();
     } else {
@@ -210,12 +186,12 @@ void saveDataToFile() {
     }
 
     ofstream outFileBankAccounts("bankAccounts.txt");
-    BankAccNode* bankTemp = bankAccHead;
 
+    LinkedList<BankAccount>::Node* temp2 = bankAccs.head;
     if (outFileBankAccounts.is_open()) {
-        while (bankTemp) {
-            outFileBankAccounts << bankTemp->account->getData();
-            bankTemp = bankTemp->next;
+        while (temp2) {
+            outFileBankAccounts << temp2->data->getData();
+            temp2 = temp2->next;
         }
         outFileBankAccounts.close();
     } else {
@@ -224,21 +200,8 @@ void saveDataToFile() {
 }
 
 void cleanupMemory() {
-    Node* temp1;
-    while (accHead) {
-        temp1 = accHead;
-        accHead = accHead->next;
-        delete temp1->account;
-        delete temp1;
-    }
-
-    BankAccNode* temp2;
-    while (bankAccHead) {
-        temp2 = bankAccHead;
-        bankAccHead = bankAccHead->next;
-        delete temp2->account;
-        delete temp2;
-    }
+    accs.clear();
+    bankAccs.clear();
 }
 
 int main() {
@@ -246,10 +209,15 @@ int main() {
     int choice;
 
     do {
-        cout << "1. Sign Up\n";
-        cout << "2. Log In\n";
-        cout << "3. Exit\n";
-        cout << "Enter your choice: ";
+        #ifdef _WIN32
+            system("cls");
+        #else
+            system("clear");
+        #endif
+        cout << "1. Sign Up\n"
+             << "2. Log In\n"
+             << "3. Exit\n"
+             << "Enter your choice: ";
         cin >> choice;
 
         switch (choice) {
@@ -261,9 +229,9 @@ int main() {
                 if (account) {
                     loggedInAccount = account;
                     if (dynamic_cast<Admin*>(account)) {
-                        static_cast<Admin*>(account)->displayActions(accHead, bankAccHead);
+                        static_cast<Admin*>(account)->displayActions(accs, bankAccs);
                     } else {
-                        static_cast<User*>(account)->displayActions(usedAccountIds, bankAccHead, bankAccTail);
+                        static_cast<User*>(account)->displayActions(usedAccountIds, bankAccs);
                     }
                 } else {
                     cout << "Login failed. Please check your credentials.\n";
@@ -277,6 +245,9 @@ int main() {
                 cout << "Invalid choice. Try again.\n";
         }
         saveDataToFile();
+        cout << "Press any key to continue...";
+        cin.ignore();
+        cin.get();
     } while (choice != 3);
 
     cleanupMemory();

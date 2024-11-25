@@ -2,168 +2,154 @@
 
 using namespace std;
 
-void Admin::freezeBankAccount(BankAccNode* bankAccHead) {
-    BankAccNode* temp = bankAccHead;
+void Admin::freezeBankAccount(LinkedList<BankAccount>& bankAccs) {
+    LinkedList<BankAccount>::Node* current = bankAccs.head;
     long id;
+
     cout << "Enter bank account id: ";
     cin >> id;
 
-    while (temp) {
-        if (temp->account->getAccountId() == id) {
-            temp->account->freeze();
+    while (current) {
+        if (current->data->getAccountId() == id) {
+            current->data->freeze();
             cout << "Account frozen.\n";
             return;
         }
-        temp = temp->next;
+        current = current->next;
     }
 
     cout << "Account not found.\n";
 };
 
-void Admin::unFreezeBankAccount(BankAccNode* bankAccHead) {
-    BankAccNode* temp = bankAccHead;
+void Admin::unFreezeBankAccount(LinkedList<BankAccount>& bankAccs) {
+    LinkedList<BankAccount>::Node* current = bankAccs.head;
     long id;
+    
     cout << "Enter bank account id: ";
     cin >> id;
 
-    while (temp) {
-        if (temp->account->getAccountId() == id) {
-            temp->account->unFreeze();
-            cout << "Account unfrozen.\n";
+    while (current) {
+        if (current->data->getAccountId() == id) {
+            current->data->unFreeze();
+            cout << "Account unFrozen.\n";
             return;
         }
-        temp = temp->next;
+        current = current->next;
     }
 
     cout << "Account not found.\n";
 }
 
-void Admin::viewBankAccountInfo(BankAccNode* bankAccHead) const {
-    BankAccNode* temp = bankAccHead;
+void Admin::viewBankAccountInfo(LinkedList<BankAccount>& bankAccs) const {
+    LinkedList<BankAccount>::Node* current = bankAccs.head;
     cout << "Enter the bank account ID:";
     int accountId;
     cin >> accountId;
 
-    while (temp) {
-        if (temp->account->getAccountId() == accountId) {
-            temp->account->displayInfo(); 
+    while (current) {
+        if (current->data->getAccountId() == accountId) {
+            current->data->displayInfo(); 
             return;
         }
-        temp = temp->next;
+        current = current->next;
     }
 
     cout << "Account not found.\n";
 }
 
-void Admin::deleteBankAccount(BankAccNode*& bankAccHead) {
+void Admin::deleteBankAccount(LinkedList<BankAccount>& bankAccs) {
     int id;
     cout << "Enter the id of the bank account to delete: ";
     cin >> id;
 
-    if (!bankAccHead) {
+    if (bankAccs.isEmpty()) {
         cout << "Bank account not found.\n";
         return;
     }
 
-    BankAccNode* temp = bankAccHead;
-    BankAccNode* prev = nullptr;
-
-    while (temp) {
-        if (temp->account->getAccountId() == id) {
-            if (!prev) {
-                bankAccHead = temp->next;
-            } else {
-                prev->next = temp->next;
-            }
-
-            delete temp;
-            cout << "Bank account deleted.\n";
-            return;
-        }
-
-        prev = temp;
-        temp = temp->next;
+    LinkedList<BankAccount>::Node* current = bankAccs.head;
+    while (current) {
+        if (current->data->getAccountId() == id) break;
+        current = current->next;
     }
 
-    cout << "Bank account not found.\n";
+    if (!current) {
+        cout << "Bank account not found.\n";
+        return;
+    }
+
+    bankAccs.remove(current->data);
 }
 
-void Admin::viewUserInfo(Node* head) const {
-    Node* temp = head;
-    cout << "Enter username: ";
+void Admin::viewUserInfo(LinkedList<Account>& accs) const {
+    LinkedList<Account>::Node* current = accs.head;
     string username;
+    cout << "Enter username: ";
     cin >> username;
 
-    while (temp) {
-        User* targetUser = dynamic_cast<User*>(temp->account);
+    while (current) {
+        User* targetUser = dynamic_cast<User*>(current->data);
         if (targetUser && targetUser->getUsername() == username) {
             targetUser->displayInfo(); 
             return;
         }
-        temp = temp->next;
+        current = current->next;
     }
-
     cout << "User not found.\n";
 };
 
-void Admin::viewUserTransactionHistory(Node* head) const {
-    Node* temp = head;
-    cout << "Enter username: ";
+void Admin::viewUserTransactionHistory(LinkedList<Account>& accs) const {
+    LinkedList<Account>::Node* current = accs.head;
     string username;
+    cout << "Enter username: ";
     cin >> username;
 
-    while (temp) {
-        User* targetUser = dynamic_cast<User*>(temp->account);
+    while (current) {
+        User* targetUser = dynamic_cast<User*>(current->data);
         if (targetUser && targetUser->getUsername() == username) {
             targetUser->loadTransactionHistory();
-            targetUser->showTransactionHistory(); 
+            targetUser->showTransactionHistory();
             return;
         }
-        temp = temp->next;
+        current = current->next;
     }
-
     cout << "User not found.\n";
 }
 
-void Admin::deleteUser(Node*& head) {
+void Admin::deleteUser(LinkedList<Account>& accs) {
     string username;
     cout << "Enter username: ";
     cin >> username;
 
-    if (!head) {
+    if (accs.isEmpty()) {
         cout << "User not found.\n";
         return;
     }
 
-    Node* temp = head;
-    Node* prev = nullptr;
-
-    while (temp) {
-        User* targetUser = dynamic_cast<User*>(temp->account);
-        if (targetUser && targetUser->getUsername() == username) {
-            if (!prev) {
-                head = temp->next;
-            } else {
-                prev->next = temp->next;
-            }
-
-            delete temp;
-            cout << "User deleted.\n";
-            return;
-        }
-
-        prev = temp;
-        temp = temp->next;
+    LinkedList<Account>::Node* current = accs.head;
+    while (current) {
+        if (current->data->getUsername() == username) break;
+        current = current->next;
     }
 
-    cout << "User not found.\n";
+    if (!current) {
+        cout << "Bank account not found.\n";
+        return;
+    }
+
+    accs.remove(current->data);
 }
 
-void Admin::displayActions(Node* head, BankAccNode* bankAccHead) {
-    int adminChoice;
+void Admin::displayActions(LinkedList<Account>& accs, LinkedList<BankAccount>& bankAccs) {
+    int choice;
     
     do {
-        cout << "\nAdmin Menu:\n"
+        #ifdef _WIN32
+            system("cls");
+        #else
+            system("clear");
+        #endif
+        cout << "Admin Menu:\n"
              << "1. Freeze bank account\n"
              << "2. Unfreeze bank account\n"
              << "3. View bank account info\n"
@@ -173,41 +159,35 @@ void Admin::displayActions(Node* head, BankAccNode* bankAccHead) {
              << "7. Delete user\n"
              << "8. Log out\n"
              << "Enter your choice: ";
-        cin >> adminChoice;
+        cin >> choice;
 
-        string username;
-        int accountId;
-        Node* temp = head;
-        User* targetUser = nullptr;
-        BankAccount* targetBankAccount = nullptr;
-
-        switch (adminChoice) {
+        switch (choice) {
             case 1:
-                freezeBankAccount(bankAccHead);
+                freezeBankAccount(bankAccs);
                 break;
                 
             case 2:
-                unFreezeBankAccount(bankAccHead);
+                unFreezeBankAccount(bankAccs);
                 break;
 
             case 3:
-                viewBankAccountInfo(bankAccHead);
+                viewBankAccountInfo(bankAccs);
                 break;
 
             case 4:
-                deleteBankAccount(bankAccHead);
+                deleteBankAccount(bankAccs);
                 break;
 
             case 5:
-                viewUserInfo(head);
+                viewUserInfo(accs);
                 break;
 
             case 6:
-                viewUserTransactionHistory(head);
+                viewUserTransactionHistory(accs);
                 break;
 
             case 7:
-                deleteUser(head);
+                deleteUser(accs);
                 break;
 
             case 8:
@@ -217,5 +197,10 @@ void Admin::displayActions(Node* head, BankAccNode* bankAccHead) {
             default:
                 cout << "Invalid choice. Try again.\n";
         }
-    } while (adminChoice != 8);
+        if (choice != 8) {
+            cout << "Press any key to continue...";
+            cin.ignore();
+            cin.get();
+        }
+    } while (choice != 8);
 }

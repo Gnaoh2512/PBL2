@@ -1,5 +1,4 @@
 #include "User.h"
-#include "TimeUtils.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -7,22 +6,25 @@
 #include <random>
 
 void User::deposit() {
-    displayBankAccountsInfo();
+    if (userBankAccounts.isEmpty()) {
+        cout << name  << " has no bank account.\n";
+        return;
+    }
     
     char choice = 'y';
     int choice2 = 1;
     
     while (choice != 'n') {
-        BankAccNode* temp = bankAccountHead;
+        LinkedList<BankAccount>::Node* current = userBankAccounts.head;
         int index = 1;
         
-        while (temp) {
-            cout << index << ". " << temp->account->getAccountId() << "    " << temp->account->getAccountType() << endl;
-            temp = temp->next;
+        while (current) {
+            cout << index << ". " << current->data->getAccountId() << " | " << current->data->getAccountType() << endl;
+            current = current->next;
             index++;
         }
         
-        cout << "Choose bank account to deposit into:\n";
+        cout << "Choose bank account to deposit into: ";
         cin >> choice2;
         
         if (choice2 < 1 || choice2 >= index) {
@@ -30,17 +32,17 @@ void User::deposit() {
             continue;
         }
         
-        temp = bankAccountHead;
+        current = userBankAccounts.head;
         for (int i = 1; i < choice2; i++) {
-            temp = temp->next;
+            current = current->next;
         }
         
-        if (temp->account->getIsFrozen()) {
+        if (current->data->getIsFrozen()) {
             cout << "Bank account is frozen and cannot receive deposits.\n";
             continue;
         }
         
-        temp->account->displayInfo();
+        current->data->displayInfo();
         
         double amount;
         cout << "Enter amount to deposit: ";
@@ -48,11 +50,11 @@ void User::deposit() {
 
         if (amount <= 0) {
             cout << "Deposit amount must be greater than zero.\n";
-            continue;;
+            continue;
         }
 
-        temp->account->deposit(amount);
-        recordTransaction("deposit", amount, 0, *temp->account);
+        current->data->deposit(amount);
+        recordTransaction("deposit", amount, 0, *current->data);
         
         cout << "Do you want to make another deposit? (y/n): ";
         cin >> choice;
@@ -60,22 +62,25 @@ void User::deposit() {
 }
 
 void User::withdraw() {
-    displayBankAccountsInfo();
+    if (userBankAccounts.isEmpty()) {
+        cout << name  << " has no bank account.\n";
+        return;
+    }
 
     char choice = 'y';
     int choice2 = 1;
 
     while (choice != 'n') {
-        BankAccNode* temp = bankAccountHead;
+        LinkedList<BankAccount>::Node* current = userBankAccounts.head;
         int index = 1;
         
-        while (temp) {
-            cout << index << ". " << temp->account->getAccountId() << "    " << temp->account->getAccountType() << endl;
-            temp = temp->next;
+        while (current) {
+            cout << index << ". " << current->data->getAccountId() << " | " << current->data->getAccountType() << endl;
+            current = current->next;
             index++;
         }
         
-        cout << "Choose bank account to withdraw from:\n";
+        cout << "Choose bank account to withdraw from: ";
         cin >> choice2;
 
         if (choice2 < 1 || choice2 >= index) {
@@ -83,17 +88,17 @@ void User::withdraw() {
             continue;
         }
 
-        temp = bankAccountHead;
+        current = userBankAccounts.head;
         for (int i = 1; i < choice2; i++) {
-            temp = temp->next;
+            current = current->next;
         }
 
-        if (temp->account->getIsFrozen()) {
-            cout << "Bank account is frozen and cannot be accessed for withdrawal.\n";
+        if (current->data->getIsFrozen()) {
+            cout << "Bank account is frozen and cannot be accessed to withdraw.\n";
             continue;
         }
 
-        temp->account->displayInfo();
+        current->data->displayInfo();
         
         double amount;
         cout << "Enter amount to withdraw: ";
@@ -104,8 +109,8 @@ void User::withdraw() {
             continue;
         }
 
-        if (temp->account->withdraw(amount)) {
-            recordTransaction("withdraw", amount, 0, *temp->account);
+        if (current->data->withdraw(amount)) {
+            recordTransaction("withdraw", amount, 0, *current->data);
         } else {
             cout << "Insufficient balance or invalid amount.\n";
         }
@@ -115,23 +120,26 @@ void User::withdraw() {
     }
 }
 
-void User::transfer(BankAccNode* bankAccHead) {
-    displayBankAccountsInfo();
+void User::transfer(LinkedList<BankAccount> &bankAccs) {
+    if (userBankAccounts.isEmpty()) {
+        cout << name  << " has no bank account.\n";
+        return;
+    }
 
     char choice = 'y';
     int choice2 = 1;
 
     while (choice != 'n') {
-        BankAccNode* temp = bankAccountHead;
+        LinkedList<BankAccount>::Node* temp1 = userBankAccounts.head;
         int index = 1;
         
-        while (temp) {
-            cout << index << ". " << temp->account->getAccountId() << "    " << temp->account->getAccountType() << endl;
-            temp = temp->next;
+        while (temp1) {
+            cout << index << ". " << temp1->data->getAccountId() << " | " << temp1->data->getAccountType() << endl;
+            temp1 = temp1->next;
             index++;
         }
         
-        cout << "Choose bank account to be begin transfer:\n";
+        cout << "Choose bank account to be begin transfer: ";
         cin >> choice2;
 
         if (choice2 < 1 || choice2 >= index) {
@@ -139,27 +147,28 @@ void User::transfer(BankAccNode* bankAccHead) {
             continue;
         }
 
-        temp = bankAccountHead;
+        temp1 = userBankAccounts.head;
+
         for (int i = 1; i < choice2; i++) {
-            temp = temp->next;
+            temp1 = temp1->next;
         }
 
-        if (temp->account->getIsFrozen()) {
-            cout << "Bank account is frozen and cannot be accessed to transfer.\n";
+        if (temp1->data->getIsFrozen()) {
+            cout << "Bank account is frozen and cannot be accessed to begin transfer.\n";
             continue;
         }
 
-        temp->account->displayInfo();
+        temp1->data->displayInfo();
         
         int toAccountId;
         double amount;
-        BankAccNode* temp2 = bankAccHead;
+        LinkedList<BankAccount>::Node* temp2 = bankAccs.head;
 
         cout << "Enter account id to transfer: ";
         cin >> toAccountId;
 
         while (temp2) {
-            if (temp2->account->getAccountId() == toAccountId) {
+            if (temp2->data->getAccountId() == toAccountId) {
                 break;
             }
             temp2 = temp2->next;
@@ -167,11 +176,6 @@ void User::transfer(BankAccNode* bankAccHead) {
 
         if (!temp2) {
             cout << "Account not found.\n";
-            continue;
-        }
-
-        if (amount <= 0) {
-            cout << "Transfer amount must be greater than zero.\n";
             continue;
         }
 
@@ -183,8 +187,8 @@ void User::transfer(BankAccNode* bankAccHead) {
             continue;
         }
 
-        if (temp->account->transfer(amount, *temp2->account)) {
-            recordTransaction("transfer", amount, temp2->account->getAccountId(), *temp->account);
+        if (temp1->data->transfer(amount, *temp2->data)) {
+            recordTransaction("transfer", amount, temp1->data->getAccountId(), *temp2->data);
         } else {
             cout << "Insufficient balance or invalid amount.\n";
         }
@@ -236,16 +240,15 @@ void User::changePassword() {
 }
 
 void User::showTransactionHistory() {
-    if (transactionHistoryHead == nullptr) {
+    if (transactionHistory.isEmpty()) {
         cout << "No previous transaction history found for " << name << endl;
         return;
     }
 
     cout << "Transaction History for " << name << ":\n";
-
-    TransactionNode* current = transactionHistoryHead;
+    LinkedList<Transaction>::Node* current = transactionHistory.head;
     while (current != nullptr) {
-        current->transaction->displayInfo();
+        current->data->displayInfo();
         current = current->next;
     }
 }
@@ -253,8 +256,8 @@ void User::showTransactionHistory() {
 void User::saveTransactionHistory() {
     ofstream outFile("transaction.txt", ios_base::app);
     if (outFile.is_open()) {
-        TransactionNode* current = transactionHistoryHead;
-        outFile << current->transaction->getData();
+        LinkedList<Transaction>::Node* current = transactionHistory.tail;
+        outFile << current->data->getData();
         outFile.close();
     } else {
         cout << "Error saving transaction history for " << name << endl;
@@ -262,8 +265,6 @@ void User::saveTransactionHistory() {
 }
 
 void User::loadTransactionHistory() {
-    if (transactionHistoryHead != nullptr) return;
-
     ifstream inFile("transaction.txt");
 
     if (inFile.is_open()) {
@@ -288,31 +289,24 @@ void User::loadTransactionHistory() {
                 ss.ignore();
                 getline(ss, date);
 
-                Transaction* newTransaction = new Transaction(transactionId, transactionType, username, fromAccountId, toAccountId, amount, date);
-                TransactionNode* newNode = new TransactionNode(newTransaction, transactionHistoryHead);
-                transactionHistoryHead = newNode;
+                transactionHistory.add(new Transaction(transactionId, transactionType, username, fromAccountId, toAccountId, amount, date));
             }
         }
 
         inFile.close();
     } else {
-        cout << "Error opening transaction file." << endl;
+        cout << "Error opening transaction file.\n";
     }
 }
 
 void User::recordTransaction(const string& transactionType, double amount, long toAccId, BankAccount& bankAccount) {
     TimeUtils timeUtils;
-
-    Transaction* newTransaction = new Transaction(Transaction::generateUniqueTransactionId(), transactionType, username, bankAccount.getAccountId(), toAccId, amount, timeUtils.getCurrentDate(true));
-    TransactionNode* newNode = new TransactionNode(newTransaction);
-
-    newNode->next = transactionHistoryHead;
-    transactionHistoryHead = newNode;
+    transactionHistory.add(new Transaction(Transaction::generateUniqueTransactionId(), transactionType, username, bankAccount.getAccountId(), toAccId, amount, timeUtils.getCurrentDate(true)));
 
     saveTransactionHistory();
 }
 
-void User::createBankAccount(SortedLinkedList<int>& usedAccountIds, BankAccNode* bankAccHead, BankAccNode* bankAccTail) {
+void User::createBankAccount(SortedLinkedList<int>& usedAccountIds, LinkedList<BankAccount> &bankAccs) {
     int accountId;
     char choice;
     cout << "Choose account type (1: Savings, 2: Credit, 3: Regular): ";
@@ -331,7 +325,7 @@ void User::createBankAccount(SortedLinkedList<int>& usedAccountIds, BankAccNode*
             newAccount = new RegularAccount();
             break;
         default:
-            cout << "Invalid option. Exiting..." << endl;
+            cout << "Invalid option. Exiting...\n";
             return;
     }
 
@@ -343,7 +337,7 @@ void User::createBankAccount(SortedLinkedList<int>& usedAccountIds, BankAccNode*
             cout << "Enter an 8-digit account id: ";
             cin >> accountId;
             if (to_string(accountId).length() != 8 || usedAccountIds.search(accountId)) {
-                cout << "Invalid or taken account id. Please enter a unique 8-digit id." << endl;
+                cout << "Invalid or taken account id. Please enter a unique 8-digit id.\n";
             }
         } while (to_string(accountId).length() != 8 || usedAccountIds.search(accountId));
     } else {
@@ -355,79 +349,61 @@ void User::createBankAccount(SortedLinkedList<int>& usedAccountIds, BankAccNode*
     newAccount->setUsername(User::username);
     usedAccountIds.add(accountId);
 
-    BankAccNode* newBankAccountNode = new BankAccNode(newAccount, nullptr);
-
-    if (bankAccHead == nullptr) {
-        bankAccHead = newBankAccountNode;
-        bankAccTail = newBankAccountNode;
-    } else {
-        bankAccTail->next = newBankAccountNode;
-        bankAccTail = newBankAccountNode;
-    }
-
-    BankAccNode* newBankAccNode = new BankAccNode(newAccount);
-    newBankAccNode->next = bankAccountHead;
-    bankAccountHead = newBankAccNode;
+    userBankAccounts.add(newAccount);
+    bankAccs.add(newAccount);
     
-    cout << "Account created successfully!" << endl;
+    cout << "Account created successfully!\n";
 }
 
-void User::loadBankAccount(BankAccNode* bankAccHead) {
-    if (bankAccountHead != nullptr) return;
+void User::loadBankAccount(LinkedList<BankAccount> &bankAccs) {
+    LinkedList<BankAccount>::Node* current = bankAccs.head;
 
-    BankAccNode* temp = bankAccHead;
-
-    while (temp) {
-        if (temp->account->getUsername() == username) {
-            BankAccNode* newBankAccNode = new BankAccNode(temp->account);
-            
-            newBankAccNode->next = bankAccountHead;
-            bankAccountHead = newBankAccNode;
+    while (current) {
+        if (current->data->getUsername() == username) {
+            userBankAccounts.add(current->data);
         }
-
-        temp = temp->next;
+        current = current->next;
     }
 }
 
 void User::showBankAccount() {
-    if (bankAccountHead == nullptr) {
-        cout << name  << "has no bank account." << endl;
+    if (userBankAccounts.isEmpty()) {
+        cout << name  << " has no bank account.\n";
         return;
     }
-
     cout << name << "'s bank accounts:\n";
-
-    BankAccNode* temp = bankAccountHead;
-    while (temp != nullptr) {
-        temp->account->displayInfo();
-        temp = temp->next;
-    }
+    displayBankAccountsInfo();
 }
 
 void User::displayBankAccountsInfo() {
-    BankAccNode* temp = bankAccountHead;
-    while (temp) {
-        temp->account->displayInfo();
-        temp = temp->next;
+    LinkedList<BankAccount>::Node* current = userBankAccounts.head;
+    while (current) {
+        current->data->displayInfo();
+        current = current->next;
     }
 }
 
-void User::displayActions(SortedLinkedList<int>& usedAccountIds, BankAccNode* bankAccHead, BankAccNode* bankAccTail) {
+void User::displayActions(SortedLinkedList<int>& usedAccountIds, LinkedList<BankAccount> &bankAccs) {
     loadTransactionHistory();
-    loadBankAccount(bankAccHead);
+    loadBankAccount(bankAccs);
     int userChoice;
 
     do {
-        cout << "\nUser Menu:\n";
-        cout << "1. Deposit\n";
-        cout << "2. Withdraw\n";
-        cout << "3. Transfer\n";
-        cout << "4. View transaction history\n";
-        cout << "5. Change password\n";
-        cout << "6. Create bank account\n";
-        cout << "7. Show bank account\n";
-        cout << "8. Log out\n";
-        cout << "Enter your choice: ";
+        #ifdef _WIN32
+            system("cls");
+        #else
+            system("clear");
+        #endif
+        cout << "User Menu:\n"
+             << "1. Deposit\n"
+             << "2. Withdraw\n"
+             << "3. Transfer\n"
+             << "4. View transaction history\n"
+             << "5. Change password\n"
+             << "6. Create bank account\n"
+             << "7. Show bank account\n"
+             << "8. Log out\n"
+             << "Enter your choice: ";
 
         cin >> userChoice;
         if (cin.fail()) {
@@ -445,7 +421,7 @@ void User::displayActions(SortedLinkedList<int>& usedAccountIds, BankAccNode* ba
                 withdraw();
                 break;
             case 3:
-                transfer(bankAccHead);
+                transfer(bankAccs);
                 break;
             case 4:
                 showTransactionHistory();
@@ -454,7 +430,7 @@ void User::displayActions(SortedLinkedList<int>& usedAccountIds, BankAccNode* ba
                 changePassword();
                 break;
             case 6:
-                createBankAccount(usedAccountIds, bankAccHead, bankAccTail);
+                createBankAccount(usedAccountIds, bankAccs);
                 break;
             case 7:
                 showBankAccount();
@@ -465,5 +441,12 @@ void User::displayActions(SortedLinkedList<int>& usedAccountIds, BankAccNode* ba
             default:
                 cout << "Invalid choice. Try again.\n";
         }
+        if (userChoice != 8) {
+            cout << "Press any key to continue...";
+            cin.ignore();
+            cin.get();
+        }
     } while (userChoice != 8);
+    userBankAccounts.clear();
+    transactionHistory.clear();
 }

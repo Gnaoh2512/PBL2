@@ -17,6 +17,8 @@ public:
     
     Transaction(uint64_t transId, const string &type,  const string &username, int fromAcc, int toAcc, double amt, const string &date);
 
+    ~Transaction() {};
+    
     int getTransactionId() const { return transactionId; };
     string getTransactionDate() const { return transactionDate; };
     string getTransactionType() const { return transactionType; };

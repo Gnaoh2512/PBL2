@@ -14,6 +14,7 @@ private:
 public:
     SavingAccount(int accountId = 404, std::string username = "username", std::string createdDate = getCurrentDate(), double balance = 0, bool isFlagged = false, bool isFrozen = false);
 
+    ~SavingAccount() override {};
     void displayInfo() override;
     std::string getData() override;
     std::string getAccountType() override;

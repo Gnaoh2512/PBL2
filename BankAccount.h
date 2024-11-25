@@ -19,6 +19,8 @@ protected:
 public:
     BankAccount(int accountId, string username, string createdDate, double balance = 0, bool isFlagged = false, bool isFrozen = false) : accountId(accountId), username(username), balance(balance), createdDate(createdDate), isFlagged(isFlagged), isFrozen(isFrozen) {}
     
+    virtual ~BankAccount() {cout << "delete bankAcc";}
+    
     double getBalance() const { return balance; }
     string getCreatedDate() const { return createdDate; }
     bool getIsFrozen() const { return isFrozen; }
@@ -46,12 +48,6 @@ public:
     virtual bool withdraw(double amount) = 0;
     virtual bool transfer(double amount, BankAccount& bankAcc) = 0;
     virtual void monthlyUpdate() = 0;
-};
-
-struct BankAccNode {
-    BankAccount* account;
-    BankAccNode* next;
-    BankAccNode(BankAccount* acc, BankAccNode* nxt = nullptr) : account(acc), next(nxt) {}
 };
 
 #endif // BANKACCOUNT_H

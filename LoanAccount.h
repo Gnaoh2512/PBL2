@@ -15,6 +15,7 @@ private:
 public:
     LoanAccount(int accountId = 404, std::string username = "username", std::string createdDate = getCurrentDate(), double balance = 0, bool isFlagged = false, bool isFrozen = false, double currLoan = 0);
 
+    ~LoanAccount() override {};
     void displayInfo() override;
     std::string getData() override;
     std::string getAccountType() override;

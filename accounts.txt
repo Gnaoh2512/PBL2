@@ -1,0 +1,6 @@
+User|0|0|0123456
+Admin|admin|1|1
+User|1|3|123456
+User|ko|kokoko|kokoko
+User|l|lplplp|lplplp
+User|TranHoang|gnoah2512|gnoah2512

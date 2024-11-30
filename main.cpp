@@ -119,7 +119,11 @@ Account* login() {
 }
 
 void signUp() {
+<<<<<<< HEAD
     string name, username, password;
+=======
+    string name, username, password, confirmPassword;
+>>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
 
     cout << "Enter Name: ";
     cin >> name;
@@ -135,7 +139,11 @@ void signUp() {
             cout << "Username must be at least 6 characters long.\n";
             continue;
         }
+<<<<<<< HEAD
         if (usedUsernames.search(username)) {
+=======
+        if (usedUsernames.search(name)) {
+>>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
             cout << "Username is already taken. Please choose a different one.\n";
             continue;
         }
@@ -143,7 +151,11 @@ void signUp() {
     }
 
     while (true) {
+<<<<<<< HEAD
         cout << "Enter password: ";
+=======
+        cout << "Enter new password: ";
+>>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
         cin >> password;
         if (password.empty()) {
             cout << "Password cannot be empty.\n";
@@ -155,6 +167,19 @@ void signUp() {
         }
         break;
     }
+<<<<<<< HEAD
+=======
+
+    while (true) {
+        cout << "Confirm new password: ";
+        cin >> confirmPassword;
+        if (password != confirmPassword) {
+            cout << "Passwords do not match. Please try again.\n";
+            continue;
+        }
+        break;
+    }
+>>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
         
     usedUsernames.add(name);
     accs.add(new User(name, username, password));

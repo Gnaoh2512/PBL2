@@ -79,7 +79,10 @@ void Admin::deleteBankAccount(LinkedList<BankAccount>& bankAccs) {
     }
 
     bankAccs.remove(current->data);
+<<<<<<< HEAD
     cout << "Bank account removed.\n";
+=======
+>>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
 }
 
 void Admin::viewUserInfo(LinkedList<Account>& accs) const {
@@ -134,12 +137,19 @@ void Admin::deleteUser(LinkedList<Account>& accs) {
     }
 
     if (!current) {
+<<<<<<< HEAD
         cout << "User not found.\n";
+=======
+        cout << "Bank account not found.\n";
+>>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
         return;
     }
 
     accs.remove(current->data);
+<<<<<<< HEAD
     cout << "User deleted.\n";
+=======
+>>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
 }
 
 void Admin::displayActions(LinkedList<Account>& accs, LinkedList<BankAccount>& bankAccs) {

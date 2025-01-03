@@ -4,10 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
-#include <ctime>
 #include <iomanip>
 #include <sstream>
-#include <stdexcept>
 
 using namespace std;
 using namespace std::chrono;

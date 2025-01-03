@@ -19,7 +19,7 @@ void Admin::freezeBankAccount(LinkedList<BankAccount>& bankAccs) {
     }
 
     cout << "Account not found.\n";
-};
+}
 
 void Admin::unFreezeBankAccount(LinkedList<BankAccount>& bankAccs) {
     LinkedList<BankAccount>::Node* current = bankAccs.head;
@@ -79,10 +79,7 @@ void Admin::deleteBankAccount(LinkedList<BankAccount>& bankAccs) {
     }
 
     bankAccs.remove(current->data);
-<<<<<<< HEAD
     cout << "Bank account removed.\n";
-=======
->>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
 }
 
 void Admin::viewUserInfo(LinkedList<Account>& accs) const {
@@ -100,7 +97,7 @@ void Admin::viewUserInfo(LinkedList<Account>& accs) const {
         current = current->next;
     }
     cout << "User not found.\n";
-};
+}
 
 void Admin::viewUserTransactionHistory(LinkedList<Account>& accs) const {
     LinkedList<Account>::Node* current = accs.head;
@@ -137,19 +134,12 @@ void Admin::deleteUser(LinkedList<Account>& accs) {
     }
 
     if (!current) {
-<<<<<<< HEAD
         cout << "User not found.\n";
-=======
-        cout << "Bank account not found.\n";
->>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
         return;
     }
 
     accs.remove(current->data);
-<<<<<<< HEAD
     cout << "User deleted.\n";
-=======
->>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
 }
 
 void Admin::displayActions(LinkedList<Account>& accs, LinkedList<BankAccount>& bankAccs) {
@@ -177,7 +167,7 @@ void Admin::displayActions(LinkedList<Account>& accs, LinkedList<BankAccount>& b
             case 1:
                 freezeBankAccount(bankAccs);
                 break;
-                
+
             case 2:
                 unFreezeBankAccount(bankAccs);
                 break;

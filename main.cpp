@@ -1,9 +1,3 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <chrono>
-#include <iomanip>
 #include "Account.h"
 #include "User.h"
 #include "Admin.h"
@@ -25,7 +19,6 @@ void readDataFromFile() {
     ifstream inFileAccounts("accounts.txt");
     TimeUtils timeUtils;
     bool isNewMonth = timeUtils.isNewMonth();
-    if (isNewMonth) cout << "A new month has passed. Updated bank accounts data->\n";
 
     if (inFileAccounts.is_open()) {
         string line;
@@ -79,16 +72,19 @@ void readDataFromFile() {
             getline(ss, temp, '|');
             isFrozen = stoi(temp);
 
+            BankAccount* bankAcc;
             if (accountType == "loan") {
                 double currentLoan;
                 getline(ss, temp, '|');
                 currentLoan = stod(temp);
-                bankAccs.add(new LoanAccount(accountId, username, createdDate, balance, isFlagged, isFrozen, currentLoan));
+                bankAcc = new LoanAccount(accountId, username, createdDate, balance, isFlagged, isFrozen, currentLoan);
             } else if (accountType == "saving") {
-                bankAccs.add(new SavingAccount(accountId, username, createdDate, balance, isFlagged, isFrozen));
+                bankAcc = new SavingAccount(accountId, username, createdDate, balance, isFlagged, isFrozen);
             } else if (accountType == "regular") {
-                bankAccs.add(new RegularAccount(accountId, username, createdDate, balance, isFlagged, isFrozen));
+                bankAcc = new RegularAccount(accountId, username, createdDate, balance, isFlagged, isFrozen);
             }
+            if (isNewMonth) bankAcc->monthlyUpdate();
+            bankAccs.add(bankAcc);
         }
         inFileBankAccounts.close();
     } else {
@@ -119,11 +115,7 @@ Account* login() {
 }
 
 void signUp() {
-<<<<<<< HEAD
     string name, username, password;
-=======
-    string name, username, password, confirmPassword;
->>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
 
     cout << "Enter Name: ";
     cin >> name;
@@ -139,11 +131,7 @@ void signUp() {
             cout << "Username must be at least 6 characters long.\n";
             continue;
         }
-<<<<<<< HEAD
         if (usedUsernames.search(username)) {
-=======
-        if (usedUsernames.search(name)) {
->>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
             cout << "Username is already taken. Please choose a different one.\n";
             continue;
         }
@@ -151,11 +139,7 @@ void signUp() {
     }
 
     while (true) {
-<<<<<<< HEAD
         cout << "Enter password: ";
-=======
-        cout << "Enter new password: ";
->>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
         cin >> password;
         if (password.empty()) {
             cout << "Password cannot be empty.\n";
@@ -167,23 +151,10 @@ void signUp() {
         }
         break;
     }
-<<<<<<< HEAD
-=======
-
-    while (true) {
-        cout << "Confirm new password: ";
-        cin >> confirmPassword;
-        if (password != confirmPassword) {
-            cout << "Passwords do not match. Please try again.\n";
-            continue;
-        }
-        break;
-    }
->>>>>>> e2fd449725b4f4e754c461d38a2f533579c0b7ff
         
     usedUsernames.add(name);
     accs.add(new User(name, username, password));
-    cout << "Password updated successfully.\n";
+    cout << "Signed up successfully.\n";
 }
 
 void saveDataToFile() {
@@ -233,7 +204,14 @@ int main() {
              << "2. Log In\n"
              << "3. Exit\n"
              << "Enter your choice: ";
-        cin >> choice;
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Invalid input. Please enter a number.\n";
+            cout << "Press any key to continue...";
+            cin.get();
+            continue;
+        }
 
         switch (choice) {
             case 1:

@@ -2,9 +2,6 @@
 #define REGULARACCOUNT_H
 
 #include "BankAccount.h"
-#include <iostream>
-#include <string>
-#include <sstream>
 
 class RegularAccount : public BankAccount {
 private:

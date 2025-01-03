@@ -62,19 +62,6 @@ public:
         return false;
     }
 
-    T* get(size_t index) const {
-        if (index >= size) {
-            throw std::out_of_range("Index out of bounds");
-        }
-
-        Node* current = head;
-        for (size_t i = 0; i < index; ++i) {
-            current = current->next;
-        }
-
-        return current->data;
-    }
-
     void clear() {
         Node* current = head;
         while (current) {
@@ -90,10 +77,6 @@ public:
 
     bool isEmpty() const {
         return size == 0;
-    }
-
-    size_t getSize() const {
-        return size;
     }
 };
 

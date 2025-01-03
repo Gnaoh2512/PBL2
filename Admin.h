@@ -16,7 +16,7 @@ public:
 
     void displayInfo() override {
         cout << "Admin Account: " << name << endl;
-    };
+    }
 
     string getData() override {
         ostringstream oss;

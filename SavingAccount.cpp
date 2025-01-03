@@ -1,6 +1,4 @@
 #include "SavingAccount.h"
-#include <iostream>
-#include <sstream>
 
 SavingAccount::SavingAccount(int accountId, std::string username, std::string createdDate, double balance, bool isFlagged, bool isFrozen)
     : BankAccount(accountId, username, createdDate, balance, isFlagged, isFrozen) {}

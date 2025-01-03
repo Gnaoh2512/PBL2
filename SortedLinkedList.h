@@ -5,7 +5,6 @@
 
 template <typename T>
 class SortedLinkedList {
-
 public:
     struct Node {
         T data;
@@ -14,9 +13,10 @@ public:
     };
 
     Node* head;
+    Node* tail;
     int size;
-    
-    SortedLinkedList() : head(nullptr), size(0) {}
+
+    SortedLinkedList() : head(nullptr), tail(nullptr), size(0) {}
 
     ~SortedLinkedList() {
         Node* current = head;
@@ -32,6 +32,9 @@ public:
         if (!head || head->data >= item) {
             newNode->next = head;
             head = newNode;
+            if (!tail) {
+                tail = head;
+            }
         } else {
             Node* current = head;
             while (current->next && current->next->data < item) {
@@ -39,6 +42,9 @@ public:
             }
             newNode->next = current->next;
             current->next = newNode;
+            if (!newNode->next) {
+                tail = newNode;
+            }
         }
         size++;
     }
@@ -53,20 +59,6 @@ public:
         }
         return false;
     }
-
-    int getSize() const {
-        return size;
-    }
-
-    void display() const {
-        Node* current = head;
-        while (current) {
-            std::cout << current->data << " -> ";
-            current = current->next;
-        }
-        std::cout << "nullptr" << std::endl;
-    }
-    
 };
 
 #endif // SORTEDLINKLIST_H

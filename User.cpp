@@ -1,9 +1,4 @@
 #include "User.h"
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <random>
 
 void User::deposit() {
     if (userBankAccounts.isEmpty()) {

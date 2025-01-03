@@ -33,7 +33,7 @@ string TimeUtils::loadLastOpenDate() {
 void TimeUtils::saveLastOpenDate() {
     ofstream file(lastOpenDateFile);
     if (file.is_open()) {
-        file << getCurrentDate(true);
+        file << getCurrentDate(false);
         file.close();
     } else {
         cerr << "Error: Unable to open or create file for saving the last open date." << endl;

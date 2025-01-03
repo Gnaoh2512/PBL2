@@ -2,9 +2,6 @@
 #define LOANACCOUNT_H
 
 #include "BankAccount.h"
-#include <iostream>
-#include <sstream>
-#include <string>
 
 class LoanAccount : public BankAccount {
 private:

@@ -2,9 +2,6 @@
 #define SAVINGACCOUNT_H
 
 #include "BankAccount.h"
-#include <string>
-#include <sstream>
-#include <iostream>
 
 class SavingAccount : public BankAccount {
 private:

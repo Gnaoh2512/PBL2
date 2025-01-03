@@ -24,11 +24,4 @@ public:
     virtual string getData() = 0;
 };
 
-struct Node {
-    Account* account;
-    Node* next;
-    Node(Account* acc, Node* nxt = nullptr) : account(acc), next(nxt) {}
-    ~Node() { delete account; }
-};
-
 #endif // ACCOUNT_H
